@@ -1,8 +1,11 @@
 import { html, css, LitElement } from 'lit-element';
 
+import { Required, MaxLength, IsNumber } from '@lion/form-core';
+
 import '@lion/input/define';
 import '@lion/form/define';
 
+import { loadDefaultFeedbackMessages } from '@lion/validate-messages';
 
 export class LionTransaction extends LitElement {
   static get styles() {
@@ -14,10 +17,6 @@ export class LionTransaction extends LitElement {
         color: var(--lion-transaction-text-color, #000);
         width: 20rem;
         font-family: Arial;
-      }
-      .demo-types-input[shows-feedback-for~='info'] {
-        background-color: #d4e4ff;
-        border: 1px solid blue;
       }
       .inputs-box{
         display: flex;
@@ -38,6 +37,14 @@ export class LionTransaction extends LitElement {
         background-color: #f60;
         color: #fff;
       }
+
+      .demo-types-input {
+        padding: 1rem;
+      }
+      .demo-types-input[shows-feedback-for~='error'] {
+        background-color: #ffd4d4;
+        border: 1px solid red;
+      }
     `;
   }
 
@@ -47,9 +54,14 @@ export class LionTransaction extends LitElement {
     };
   }
 
+  static get validationTypes() {
+    return ['error'];
+  }
+
   constructor() {
     super();
     this.name = '';
+    loadDefaultFeedbackMessages();
   }
 
   _submitHandler = ev => {
@@ -62,7 +74,7 @@ export class LionTransaction extends LitElement {
     }
   }
   _preprocessAmount = value => {
-    return value.replace(/[a-zA-Z]/g, '');
+    return value.replace(/[^0-9.]/g, '');
   };
 
   render() {
@@ -71,13 +83,23 @@ export class LionTransaction extends LitElement {
       <lion-form @submit=${this._submitHandler}>
         <form @submit=${ev => ev.preventDefault()} class="form-box">
           <lion-fieldset name="nameGroup" label="Name" class="inputs-box">
-              <lion-input name="iban" label="IBAN" .fieldName="${'value'}"></lion-input>
-              <lion-input name="amount" label="Amount"><div slot="suffix">EUR</div></lion-input>
+            <lion-input name="iban" label="IBAN"  class="demo-types-input"
+              .fieldName="${'value'}"
+              .validators="${[new Required({ type: 'error' })]}"
+            ></lion-input>
+            <lion-input name="amount" label="Amount" class="demo-types-input"
+              .preprocessor=${this._preprocessAmount}
+              .validators="${[new Required(), new MaxLength(10, {
+                type: 'error',
+                getMessage: () => `Please, keep the length below the 10 characters.`
+              })]}">
+              <div slot="suffix">EUR</div>
+            </lion-input>
           </lion-fieldset>
           <div class="buttons-box">
             <lion-transaction-button label='Submit' class="submit-btn">Submit</lion-transaction-button>
             <lion-transaction-button label='Reset'
-                @click=${ev => ev.currentTarget.parentElement.parentElement.parentElement.resetGroup()}
+              @click=${ev => ev.currentTarget.parentElement.parentElement.parentElement.resetGroup()}
             >
             </lion-transaction-button>
           </div>
