@@ -21,17 +21,18 @@ export class LionTransaction extends LitElement {
       .inputs-box{
         display: flex;
         flex-direction: column;
-        height: 7rem;
-        justify-content: space-evenly;
-        padding-bottom: 1rem;
       }
       .buttons-box{
         display:flex;
         justify-content: center;
+        padding-top: 1rem
       }
       .form-box{
-        padding:3rem;
-        background-color: #DDDDDD
+        display: flex;
+        flex-direction: column;
+        padding:1.5rem;
+        background-color: #DDDDDD;
+        justify-content: flex-start;
       }
       .submit-btn{
         background-color: #f60;
@@ -39,7 +40,7 @@ export class LionTransaction extends LitElement {
       }
 
       .demo-types-input {
-        padding: 1rem;
+        padding: 0.5rem 0.5rem 1.5rem;
       }
       .demo-types-input[shows-feedback-for~='error'] {
         background-color: #ffd4d4;
